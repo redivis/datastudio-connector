@@ -1,0 +1,27 @@
+{
+  "timeZone": "America/Los_Angeles",
+  "dependencies": {
+    "libraries": [{
+      "userSymbol": "OAuth2",
+      "libraryId": "1B7FSrk5Zi6L1rSxxTDgDEUsPzlukDsi4KGuTMorsTQHhGBzBkMun4iDF",
+      "version": "37"
+    }]
+  },
+  "oauthScopes": ["https://www.googleapis.com/auth/script.external_request", "https://www.googleapis.com/auth/userinfo.email"],
+  "urlFetchWhitelist": ["https://redivis.com/api","https://accounts.google.com/o/oauth2"],
+  "dataStudio": {
+    "name": "Redivis",
+    "logoUrl": "https://storage.cloud.google.com/redivis-public/logo_no_tagline.png?folder\u0026organizationId",
+    "company": "Redivis",
+    "companyUrl": "https://redivis.com",
+    "addonUrl": "https://docs.redivis.com",
+    "supportUrl": "https://docs.redivis.com",
+    "description": "Redivis DataStudio connector",
+    "sources": ["REDIVIS"],
+    "shortDescription": "Redivis DataStudio connector",
+    "privacyPolicyUrl": "https://redivis.com/privacy",
+    "termsOfServiceUrl": "https://redivis.com/terms",
+    "useQueryConfig": true,
+    "forceViewersCredentials": true
+  }
+}
