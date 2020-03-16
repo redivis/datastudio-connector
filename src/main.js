@@ -1,84 +1,107 @@
 var cc = DataStudioApp.createCommunityConnector();
 var scriptProperties = PropertiesService.getScriptProperties();
 
-function isAdminUser() {
-  return true;
+var typeMap = {
+  date: cc.FieldType.YEAR_MONTH_DAY,
+  dateTime: cc.FieldType.DATE_HOUR_MINUTE,
+  integer: cc.FieldType.NUMBER,
+  float: cc.FieldType.NUMBER,
+  string: cc.FieldType.TEXT,
+  time: cc.FieldType.TEXT,
+  boolean: cc.FieldType.BOOLEAN
+};
+
+function checkAPIResponseForErrorMessage(response){
+	try {
+		if (response.getResponseCode() >= 400) {
+			cc.newUserError()
+				.setText(JSON.parse(response.getContentText()).error.message)
+				.throwException();
+		}
+	} catch (e){
+		cc.newUserError()
+			.setText(response.getContentText())
+			.throwException();
+	}
+
 }
 
-function getAuthType() {
-  var AuthTypes = cc.AuthType;
-  return cc
-    .newAuthTypeResponse()
-    .setAuthType(AuthTypes.NONE)
-    .build();
+function getFields(variables) {
+	var fields = cc.getFields();
+
+	variables.forEach(function(variable) {
+		var field = fields
+			.newDimension()
+			.setId(variable.name)
+			.setName(variable.name)
+			.setType(typeMap[variable.type]);
+		if (variable.label){
+			field.setDescription(variable.label);
+		}
+	});
+
+	return fields;
 }
 
-function getConfig(request) {
-  var config = cc.getConfig();
-
-  config
-    .newInfo()
-    .setId("generalInfo")
-    .setText("This is an example connector to showcase row level security.");
-
-  return config.build();
-}
-
-function getFields() {
-  var fields = cc.getFields();
-  var types = cc.FieldType;
-
-  fields
-    .newDimension()
-    .setId("id")
-    .setName("id")
-    .setType(types.NUMBER);
-
-  return fields;
+function getQuery(
+	request,
+	fields) {
+	var query = request.configParams.query;
+	if (!query){
+		query = ['SELECT * FROM `', request.configParams.owner, '.', request.configParams.parent, '.', request.configParams.table + '`'].join('')
+    }
+	if (fields && fields.length) {
+		query = 'SELECT ' + fields.map(function(field) { return '`' + field.name + '`'}) + ' FROM (' + query + ')'
+	}
+	return query;
 }
 
 function getSchema(request) {
-  return { schema: getFields().build() };
+	var response = UrlFetchApp.fetch('https://redivis.com/api/v1/dataStudio/getSchema?query=' + encodeURIComponent(getQuery(request)), {
+		method: 'get',
+		headers: { Authorization: 'Bearer ' + PropertiesService.getUserProperties().getProperty('dscc.key') },
+		muteHttpExceptions: true,
+	});
+
+	checkAPIResponseForErrorMessage(response);
+
+	return { schema: getFields(JSON.parse(response.getContentText()).variables).build() };
 }
 
-var SERVICE_ACCOUNT_CREDS = "SERVICE_ACCOUNT_CREDS";
-var SERVICE_ACCOUNT_KEY = "private_key";
-var SERVICE_ACCOUNT_EMAIL = "client_email";
-var BILLING_PROJECT_ID = "project_id";
-
 function getServiceAccountCreds() {
-  return JSON.parse(scriptProperties.getProperty(SERVICE_ACCOUNT_CREDS));
+	return JSON.parse(scriptProperties.getProperty('SERVICE_ACCOUNT_CREDS'));
 }
 
 function getOauthService() {
-  var serviceAccountCreds = getServiceAccountCreds();
-  var serviceAccountKey = serviceAccountCreds[SERVICE_ACCOUNT_KEY];
-  var serviceAccountEmail = serviceAccountCreds[SERVICE_ACCOUNT_EMAIL];
+	var serviceAccountCreds = getServiceAccountCreds();
 
-  return OAuth2.createService("DataStudio")
-    .setAuthorizationBaseUrl("https://accounts.google.com/o/oauth2/auth")
-    .setTokenUrl("https://accounts.google.com/o/oauth2/token")
-    .setPrivateKey(serviceAccountKey)
-    .setIssuer(serviceAccountEmail)
-    .setPropertyStore(scriptProperties)
-    .setCache(CacheService.getScriptCache())
-    .setScope(["https://www.googleapis.com/auth/bigquery.readonly"]);
+	return OAuth2.createService('DataStudio')
+		.setAuthorizationBaseUrl('https://accounts.google.com/o/oauth2/auth')
+		.setTokenUrl('https://accounts.google.com/o/oauth2/token')
+		.setPrivateKey(serviceAccountCreds.private_key)
+		.setIssuer(serviceAccountCreds.client_email)
+		.setPropertyStore(scriptProperties)
+		// .setCache(CacheService.getScriptCache())
+		.setScope(['https://www.googleapis.com/auth/bigquery.readonly']);
 }
 
-var BASE_SQL =
-  "SELECT * FROM `som-phs-redivis-dev.dataset_1521.60753`";
-
 function getData(request) {
-  var serviceAccountCreds = getServiceAccountCreds();
-  var accessToken = getOauthService().getAccessToken();
+	var serviceAccountCreds = getServiceAccountCreds();
+	var accessToken = getOauthService().getAccessToken();
 
-  var bqTypes = DataStudioApp.createCommunityConnector().BigQueryParameterType;
+    var response = UrlFetchApp.fetch('https://redivis.com/api/v1/dataStudio/getDataQuery?query=' + encodeURIComponent(getQuery(request, request.fields)), {
+      method: 'get',
+      headers: { Authorization: 'Bearer ' + PropertiesService.getUserProperties().getProperty('dscc.key') },
+      muteHttpExceptions: true,
+    });
 
-  return cc
-    .newBigQueryConfig()
-    .setAccessToken(accessToken)
-    .setBillingProjectId(serviceAccountCreds[BILLING_PROJECT_ID])
-    .setUseStandardSql(true)
-    .setQuery(BASE_SQL)
-    .build();
+	checkAPIResponseForErrorMessage(response);
+
+	return cc
+		.newBigQueryConfig()
+		.setAccessToken(accessToken)
+		.setBillingProjectId(serviceAccountCreds.project_id)
+		.setUseStandardSql(true)
+		.setQuery(JSON.parse(response.getContentText()).parsedQuery)
+		.build();
 }
