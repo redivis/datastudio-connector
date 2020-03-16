@@ -103,3 +103,7 @@ dist
 # TernJS port file
 .tern-port
 .DS_Store
+.idea/datastudio-connector.iml
+.idea/misc.xml
+.idea/modules.xml
+.idea/vcs.xml
