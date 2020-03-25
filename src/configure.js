@@ -5,9 +5,7 @@ function getConfig(request) {
 	config
 		.newInfo()
 		.setId('generalInfo')
-		.setText(
-			'The Redivis data studio connector allows you to visualize data resources in Redivis.'
-		);
+		.setText('The Redivis data studio connector allows you to visualize data resources in Redivis.');
 
 	config
 		.newInfo()
@@ -19,30 +17,27 @@ function getConfig(request) {
 	config
 		.newInfo()
 		.setId('advancedInfo')
-		.setText(
-			'ADVANCED USERS: check this box to create a custom query.'
-		);
+		.setText('ADVANCED USERS: check this box to create a custom query.');
 
-	config.newCheckbox()
+	config
+		.newCheckbox()
 		.setId('customQuery')
 		.setName('Create custom query')
 		.setHelpText('Write a custom query that references multiple tables using Redivis SQL syntax.')
 		.setIsDynamic(true);
 
-	if (configParams && configParams.customQuery){
+	if (configParams && configParams.customQuery) {
 		config
 			.newTextArea()
 			.setId('query')
 			.setName('Sql query')
 			.setHelpText('Learn more about referencing tables through SQL at apidocs.redivis.com')
 			.setPlaceholder('SELECT  FROM `username.dataset_name.table_name`');
-	} else{
+	} else {
 		config
 			.newInfo()
 			.setId('advancedInfo')
-			.setText(
-				'MOST USERS: Specify your Redivis table with the options below.'
-			);
+			.setText('MOST USERS: Specify your Redivis table with the options below.');
 		config
 			.newTextInput()
 			.setId('owner')

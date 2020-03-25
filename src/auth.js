@@ -1,5 +1,4 @@
 function isAdminUser() {
-	return true;
 	return Session.getActiveUser().getEmail() === 'ian@redivis.com';
 }
 
@@ -28,11 +27,15 @@ function isAuthValid() {
 }
 
 function validateKey(key) {
-	var response = UrlFetchApp.fetch('https://redivis.com/api/v1/dataStudio/validateAuth?email=' + encodeURIComponent(Session.getEffectiveUser().getEmail()), {
-		method: 'GET',
-		headers: { Authorization: 'Bearer ' + key },
-		muteHttpExceptions: true,
-	});
+	var response = UrlFetchApp.fetch(
+		'https://redivis.com/api/v1/dataStudio/validateAuth?email=' +
+			encodeURIComponent(Session.getEffectiveUser().getEmail()),
+		{
+			method: 'GET',
+			headers: { Authorization: 'Bearer ' + key },
+			muteHttpExceptions: true,
+		}
+	);
 
 	return response.getResponseCode() < 400;
 }
