@@ -3,7 +3,8 @@ var scriptProperties = PropertiesService.getScriptProperties();
 
 var typeMap = {
 	date: cc.FieldType.YEAR_MONTH_DAY,
-	dateTime: cc.FieldType.YEAR_MONTH_DAY_SECOND,
+	dateTime: cc.FieldType.YEAR_MONTH_DAY,
+	// dateTime: cc.FieldType.YEAR_MONTH_DAY_SECOND,
 	integer: cc.FieldType.NUMBER,
 	float: cc.FieldType.NUMBER,
 	string: cc.FieldType.TEXT,
@@ -27,13 +28,45 @@ function checkAPIResponseForErrorMessage(response) {
 
 function getFields(variables) {
 	var fields = cc.getFields();
-
 	variables.forEach(function(variable) {
-		var field = fields
-			.newDimension()
-			.setId(variable.name)
-			.setName(variable.name)
-			.setType(typeMap[variable.type]);
+		var field;
+
+		if (variable.type === 'date'){
+			fields
+				.newDimension()
+				.setType(typeMap['string'])
+				.setId(variable.name)
+				.setName('__' + variable.name)
+				.setIsHidden(true);
+
+			field = fields
+				.newDimension()
+				.setId('__'+variable.name)
+				.setName(variable.name)
+				.setType(typeMap[variable.type])
+				.setFormula("REGEXP_REPLACE(" + variable.name + ", '-', '')")
+		} else if (variable.type === 'dateTime'){
+			fields
+				.newDimension()
+				.setType(typeMap['string'])
+				.setId(variable.name)
+				.setName('__' + variable.name)
+				.setIsHidden(true);
+
+			field = fields
+				.newDimension()
+				.setId('__'+variable.name)
+				.setName(variable.name)
+				.setType(typeMap[variable.type])
+				.setFormula("REGEXP_REPLACE(" + variable.name + ", '-| .*', '')")
+		} else {
+			 field = fields
+				.newDimension()
+				.setId(variable.name)
+				.setName(variable.name)
+				.setType(typeMap[variable.type]);
+		}
+
 		if (variable.label) {
 			field.setDescription(variable.label);
 		}
@@ -151,7 +184,9 @@ function getData(request) {
 			.setBillingProjectId(serviceAccountCreds.project_id)
 			.setUseStandardSql(true)
 			.setQuery(JSON.parse(response.getContentText()).parsedQuery)
+			// TODO: this is testing the BI Engine stuff. Also need to remove from BQ
 			// .setQuery('SELECT * FROM som-phs-redivis-prod.dataset_1527.test')
 			.build()
 	);
 }
+
