@@ -14,6 +14,10 @@ var typeMap = {
 
 function checkAPIResponseForErrorMessage(response) {
 	try {
+
+		if (response.getResponseCode() === 401 || response.getResponseCode() === 403){
+			PropertiesService.getUserProperties().setProperty('requires_login', true);
+		}
 		if (response.getResponseCode() >= 400) {
 			cc.newUserError()
 				.setText('An API error occurred: ' + JSON.parse(response.getContentText()).error.message)
@@ -106,6 +110,7 @@ function getQuery(request, fields) {
 	}
 
 	var query = request.configParams.query;
+
 	if (!query) {
 		query = [
 			'SELECT * FROM `',
@@ -130,11 +135,18 @@ function getQuery(request, fields) {
 }
 
 function getSchema(request) {
+	PropertiesService.getUserProperties().deleteProperty('requires_login');
+
+	const headers = {};
+	if (PropertiesService.getUserProperties().getProperty('dscc.key')){
+		headers.Authorization = 'Bearer ' + PropertiesService.getUserProperties().getProperty('dscc.key')
+	}
+
 	var response = UrlFetchApp.fetch(
 		'https://redivis.com/api/v1/dataStudio/getSchema?query=' + encodeURIComponent(getQuery(request)),
 		{
 			method: 'get',
-			headers: { Authorization: 'Bearer ' + PropertiesService.getUserProperties().getProperty('dscc.key') },
+			headers: headers,
 			muteHttpExceptions: true,
 		}
 	);
@@ -162,15 +174,22 @@ function getOauthService() {
 }
 
 function getData(request) {
+	PropertiesService.getUserProperties().deleteProperty('requires_login');
+
 	var serviceAccountCreds = getServiceAccountCreds();
 	var accessToken = getOauthService().getAccessToken();
+
+	const headers = {};
+	if (PropertiesService.getUserProperties().getProperty('dscc.key')){
+		headers.Authorization = 'Bearer ' + PropertiesService.getUserProperties().getProperty('dscc.key')
+	}
 
 	var response = UrlFetchApp.fetch(
 		'https://redivis.com/api/v1/dataStudio/getDataQuery?query=' +
 			encodeURIComponent(getQuery(request, request.fields)),
 		{
 			method: 'get',
-			headers: { Authorization: 'Bearer ' + PropertiesService.getUserProperties().getProperty('dscc.key') },
+			headers: headers,
 			muteHttpExceptions: true,
 		}
 	);

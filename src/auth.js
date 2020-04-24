@@ -23,7 +23,11 @@ function setCredentials(request) {
 }
 
 function isAuthValid() {
-	return validateKey(PropertiesService.getUserProperties().getProperty('dscc.key'));
+	if (PropertiesService.getUserProperties().getProperty('requires_login')) {
+		return validateKey(PropertiesService.getUserProperties().getProperty('dscc.key'));
+	}
+
+	return true
 }
 
 function validateKey(key) {

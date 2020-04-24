@@ -23,6 +23,6 @@
     "privacyPolicyUrl": "https://redivis.com/privacy",
     "termsOfServiceUrl": "https://redivis.com/terms",
     "useQueryConfig": true,
-    "forceViewersCredentials": true
+    "forceViewersCredentials": false
   }
 }
