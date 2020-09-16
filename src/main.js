@@ -162,22 +162,44 @@ function getServiceAccountCreds() {
 
 function getOauthService() {
 	var serviceAccountCreds = getServiceAccountCreds();
+	var scriptCache = CacheService.getScriptCache()
 
-	return OAuth2.createService('DataStudio')
+	var service = OAuth2.createService('DataStudio')
 		.setAuthorizationBaseUrl('https://accounts.google.com/o/oauth2/auth')
 		.setTokenUrl('https://accounts.google.com/o/oauth2/token')
 		.setPrivateKey(serviceAccountCreds.private_key)
 		.setIssuer(serviceAccountCreds.client_email)
 		.setPropertyStore(scriptProperties)
-		.setCache(CacheService.getScriptCache())
+		.setCache(scriptCache)
 		.setScope(['https://www.googleapis.com/auth/bigquery.readonly']);
+
+
+	if (service.hasAccess()){
+		return service
+	} else {
+		// Delete from property store if there was an auth error (likely due to expired token)
+		// Only attempt this on first error to avoid infinite recursion
+
+		service.reset();
+		scriptProperties.deleteProperty('oauth2.DataStudio')
+		scriptCache.remove('oauth2.DataStudio')
+		return OAuth2.createService('DataStudio')
+			.setAuthorizationBaseUrl('https://accounts.google.com/o/oauth2/auth')
+			.setTokenUrl('https://accounts.google.com/o/oauth2/token')
+			.setPrivateKey(serviceAccountCreds.private_key)
+			.setIssuer(serviceAccountCreds.client_email)
+			// .setPropertyStore(scriptProperties) // For some reason this was causing issues...
+			.setCache(scriptCache)
+			.setScope(['https://www.googleapis.com/auth/bigquery.readonly']);
+	}
 }
 
 function getData(request) {
 	PropertiesService.getUserProperties().deleteProperty('requires_login');
 
 	var serviceAccountCreds = getServiceAccountCreds();
-	var accessToken = getOauthService().getAccessToken();
+	var oAuthService = getOauthService();
+	var accessToken = oAuthService.getAccessToken();
 
 	const headers = {};
 	if (PropertiesService.getUserProperties().getProperty('dscc.key')){
