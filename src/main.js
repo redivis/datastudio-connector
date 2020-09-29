@@ -173,13 +173,14 @@ function getOauthService() {
 		.setCache(scriptCache)
 		.setScope(['https://www.googleapis.com/auth/bigquery.readonly']);
 
-
 	if (service.hasAccess()){
 		return service
 	} else {
 		// Delete from property store if there was an auth error (likely due to expired token)
 		// Only attempt this on first error to avoid infinite recursion
-
+		// cc.newUserError()
+		// 	.setText('Has no access')
+		// 	.throwException();
 		service.reset();
 		scriptProperties.deleteProperty('oauth2.DataStudio')
 		scriptCache.remove('oauth2.DataStudio')
