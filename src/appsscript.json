@@ -4,25 +4,30 @@
     "libraries": [{
       "userSymbol": "OAuth2",
       "libraryId": "1B7FSrk5Zi6L1rSxxTDgDEUsPzlukDsi4KGuTMorsTQHhGBzBkMun4iDF",
-      "version": "38"
+      "version": "40"
     }]
   },
   "oauthScopes": ["https://www.googleapis.com/auth/script.external_request", "https://www.googleapis.com/auth/userinfo.email"],
-  "runtimeVersion": "STABLE",
-  "urlFetchWhitelist": ["https://redivis.com/api","https://accounts.google.com/o/oauth2"],
+  "runtimeVersion": "V8",
+  "urlFetchWhitelist": ["https://redivis.com/api","https://accounts.google.com/o/oauth2", "https://redivis.com/oauth"],
   "dataStudio": {
-    "name": "Redivis Connector",
+    "name": "Redivis",
     "logoUrl": "https://storage.googleapis.com/redivis-public/icon-square-40px.png",
     "company": "Redivis",
     "companyUrl": "https://redivis.com",
-    "addonUrl": "https://docs.redivis.com",
+    "addonUrl": "https://docs.redivis.com/reference/export-and-integrations/data-studio",
     "supportUrl": "https://docs.redivis.com",
-    "description": "Connect DataStudio to any table on Redivis to develop interactive visualizations and dashboards",
+    "description": "Create interactive visualizations with data stored on Redivis. Redivis allows organizations to distribute data, both public and restricted, to the research community. In turn, Redivis provides researchers with the tools to discover, understand, and analyze data within a collaborative and open ecosystem.",
     "sources": ["REDIVIS"],
-    "shortDescription": "Redivis DataStudio connector",
+    "shortDescription": "Create interactive visualizations with data stored on Redivis.",
     "privacyPolicyUrl": "https://redivis.com/privacy",
     "termsOfServiceUrl": "https://redivis.com/terms",
-    "useQueryConfig": true,
+    "authType": ["OAUTH2"],
+    "feeType": ["FREE"],
+    "advancedServices": {
+      "schema": true,
+      "data": true
+    },
     "forceViewersCredentials": false
   }
 }
