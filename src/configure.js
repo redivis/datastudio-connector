@@ -4,34 +4,27 @@ function getConfig() {
 	config
 		.newInfo()
 		.setId('generalInfo')
-		.setText('The Redivis data studio connector allows you to visualize data resources in Redivis.');
-
-	config
-		.newInfo()
-		.setId('otherInfo')
 		.setText(
-			'Please note that some data owners may prevent their data from being used in DataStudio (in which case, attempts to reference the data will provide an error notification).'
+			'Specify connection information for your Redivis table below. Full documentation for connecting with DataStudio is available at https://docs.redivis.com/reference/export-and-integrations/data-studio'
 		);
 
 	config
 		.newTextInput()
 		.setId('owner')
-		.setName('Dataset or project owner')
-		.setHelpText('Provide the user or organization short name for the owner of the dataset or project')
-		.setPlaceholder('user_name');
+		.setName('Username of dataset / project owner')
+		.setHelpText('Provide the username of the user or organization that owns this dataset / project');
 
 	config
 		.newTextInput()
 		.setId('parent')
-		.setName('Dataset or project reference')
-		.setHelpText('See apidocs.redivis.com to learn more about referencing resources')
-		.setPlaceholder('dataset_name or project_name');
+		.setName('Dataset / project name')
+		.setHelpText('Case insensitive name of the table. Non-word characters can be replaced by an underscore "_"');
 
 	config
 		.newTextInput()
 		.setId('table')
-		.setName('Table reference')
-		.setHelpText('See apidocs.redivis.com to learn more about referencing resources')
-		.setPlaceholder('table_name');
+		.setName('Table name')
+		.setHelpText('Case insensitive name of the table. Non-word characters can be replaced by an underscore "_"');
+
 	return config.build();
 }

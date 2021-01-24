@@ -22,25 +22,17 @@ function checkAPIResponseForErrorMessage(response) {
 
 function getQuery(request, fields) {
 	if (!request.configParams) {
-		cc.newUserError()
-			.setText('Please fill out the table connection configuration.')
-			.throwException();
+		cc.newUserError().setText('Please fill out the table connection configuration.').throwException();
 	}
 	const { owner, parent, table } = request.configParams;
 	if (!owner || !owner.trim()) {
-		cc.newUserError()
-			.setText('You must provide a dataset or project owner.')
-			.throwException();
+		cc.newUserError().setText('You must provide the username of the dataset or project owner.').throwException();
 	}
 	if (!parent || !parent.trim()) {
-		cc.newUserError()
-			.setText('You must provide the name of the dataset or project.')
-			.throwException();
+		cc.newUserError().setText('You must provide the name of the dataset or project.').throwException();
 	}
 	if (!table || !table.trim()) {
-		cc.newUserError()
-			.setText('You must provide the name of the table.')
-			.throwException();
+		cc.newUserError().setText('You must provide the name of the table.').throwException();
 	}
 
 	if (fields && fields.length) {

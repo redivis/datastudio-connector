@@ -1,13 +1,9 @@
-
 function isAdminUser() {
 	return Session.getActiveUser().getEmail() === 'ian@redivis.com';
 }
 
 function getAuthType() {
-	return DataStudioApp.createCommunityConnector()
-		.newAuthTypeResponse()
-		.setAuthType(cc.AuthType.OAUTH2)
-		.build();
+	return DataStudioApp.createCommunityConnector().newAuthTypeResponse().setAuthType(cc.AuthType.OAUTH2).build();
 }
 
 function resetAuth() {
@@ -16,7 +12,6 @@ function resetAuth() {
 }
 
 function isAuthValid() {
-	// return PropertiesService.getUserProperties().getProperty('isAuthValid') && getOAuthService().hasAccess();
 	if (PropertiesService.getUserProperties().getProperty('isAuthValid') === false) {
 		return false;
 	}

@@ -14,9 +14,9 @@
     "update_production": "dscc-scripts connector update_production"
   },
   "devDependencies": {
-    "@google/clasp": "^2.1.0",
-    "@google/dscc-scripts": "^1.0.13",
-    "prettier": "^1.16.4"
+    "@google/clasp": "2.3.0",
+    "@google/dscc-scripts": "1.0.17",
+    "prettier": "2.2.1"
   },
   "prettier": {
     "printWidth": 120,
@@ -26,7 +26,6 @@
     "singleQuote": true,
     "trailingComma": "es5",
     "bracketSpacing": true,
-    "jsxBracketSameLine": false,
     "arrowParens": "always"
   }
 }
