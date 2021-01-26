@@ -7,14 +7,10 @@ function getAuthType() {
 }
 
 function resetAuth() {
-	PropertiesService.getUserProperties().setProperty('isAuthValid', false);
 	getOAuthService().reset();
 }
 
 function isAuthValid() {
-	if (PropertiesService.getUserProperties().getProperty('isAuthValid') === false) {
-		return false;
-	}
 	if (getOAuthService().hasAccess() === false) {
 		return false;
 	}
@@ -28,9 +24,7 @@ function isAuthValid() {
 			muteHttpExceptions: true,
 		}
 	);
-	checkAPIResponseForErrorMessage(response);
-
-	return true;
+	return checkAPIResponseForErrorMessage(response, false);
 }
 
 function getOAuthService() {
@@ -49,7 +43,6 @@ function getOAuthService() {
 function authCallback(request) {
 	const authorized = getOAuthService().handleCallback(request);
 	if (authorized) {
-		PropertiesService.getUserProperties().setProperty('isAuthValid', true);
 		return HtmlService.createHtmlOutput('Authentication with DataStudio was successful. You can close this tab.');
 	} else {
 		return HtmlService.createHtmlOutput('Access Denied. You can close this tab.');

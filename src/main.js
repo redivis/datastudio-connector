@@ -2,22 +2,24 @@ const cc = DataStudioApp.createCommunityConnector();
 const scriptProperties = PropertiesService.getScriptProperties();
 const baseUrl = 'https://redivis.com';
 
-function checkAPIResponseForErrorMessage(response) {
-	if (response.getResponseCode() === 401) {
-		resetAuth();
-		cc.newUserError()
-			.setText(
-				`Please reload this page to re-authenticate your Redivis account. Error details: \n\n${
-					JSON.parse(response.getContentText()).error.message
-				}`
-			)
-			.throwException();
-	}
+function checkAPIResponseForErrorMessage(response, throwError = true) {
 	if (response.getResponseCode() >= 400) {
-		cc.newUserError()
-			.setText('An API error occurred: ' + JSON.parse(response.getContentText()).error.message)
-			.throwException();
+		const errorPayload = JSON.parse(response.getContentText());
+		let errorMessage;
+		if (response.getResponseCode() === 401) {
+			resetAuth();
+			// PropertiesService.getUserProperties().setProperty('shouldReauthenticate', 'true');
+			errorMessage = `Please reload this page to re-authenticate your Redivis account. Error details: \n\n${errorPayload.error.message}`;
+		} else {
+			errorMessage = 'An API error occurred: ' + errorPayload.error.message;
+		}
+		if (throwError) {
+			cc.newUserError().setText(errorMessage).throwException();
+		} else {
+			return false;
+		}
 	}
+	return true;
 }
 
 function getQuery(request, fields) {
@@ -86,16 +88,15 @@ function getQueryConfig(request) {
 	const serviceAccountCreds = getServiceAccountCreds();
 	const accessToken = getBigQueryAccessToken();
 
-	const response = UrlFetchApp.fetch(
-		`${baseUrl}/api/v1/dataStudio/getDataQuery?query=${encodeURIComponent(getQuery(request, request.fields))}`,
-		{
-			method: 'get',
-			headers: {
-				Authorization: `Bearer ${getOAuthService().getAccessToken()}`,
-			},
-			muteHttpExceptions: true,
-		}
-	);
+	const query = encodeURIComponent(getQuery(request, request.fields));
+
+	const response = UrlFetchApp.fetch(`${baseUrl}/api/v1/dataStudio/getDataQuery?query=${query}`, {
+		method: 'get',
+		headers: {
+			Authorization: `Bearer ${getOAuthService().getAccessToken()}`,
+		},
+		muteHttpExceptions: true,
+	});
 
 	checkAPIResponseForErrorMessage(response);
 
