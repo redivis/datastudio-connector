@@ -24,6 +24,9 @@
     "termsOfServiceUrl": "https://redivis.com/terms",
     "authType": ["OAUTH2"],
     "feeType": ["FREE"],
+    "templates": {
+      "default": "16d9578c-67d3-45de-9105-f628f80d0655"
+    },
     "advancedServices": {
       "schema": true,
       "data": true
