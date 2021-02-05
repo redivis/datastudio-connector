@@ -8,3 +8,5 @@ Follow the links below for additional information.
 - ### [Demo](https://datastudio.google.com/u/0/reporting/ffdc1504-1db6-43a8-b9e5-bc65092222fb/page/YJNyB)
 
 - ### [Issues](https://github.com/redivis/datastudio-connector/issues)
+
+![Data Studio Demo Redivis](/assets/data_studio_demo.gif)
