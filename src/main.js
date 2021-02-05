@@ -8,7 +8,6 @@ function checkAPIResponseForErrorMessage(response, throwError = true) {
 		let errorMessage;
 		if (response.getResponseCode() === 401) {
 			resetAuth();
-			// PropertiesService.getUserProperties().setProperty('shouldReauthenticate', 'true');
 			errorMessage = `Please reload this page to re-authenticate your Redivis account. Error details: \n\n${errorPayload.error.message}`;
 		} else {
 			errorMessage = 'An API error occurred: ' + errorPayload.error.message;
@@ -76,7 +75,6 @@ function getBigQueryAccessToken() {
 			.setTokenUrl('https://accounts.google.com/o/oauth2/token')
 			.setPrivateKey(serviceAccountCreds.private_key)
 			.setIssuer(serviceAccountCreds.client_email)
-			// .setPropertyStore(scriptProperties) // For some reason this was causing issues...
 			.setCache(scriptCache)
 			.setScope(['https://www.googleapis.com/auth/bigquery.readonly']);
 

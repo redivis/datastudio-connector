@@ -14,6 +14,7 @@ function isAuthValid() {
 	if (getOAuthService().hasAccess() === false) {
 		return false;
 	}
+	// Checks whether the authorized account can use DataStudio
 	const response = UrlFetchApp.fetch(
 		`${baseUrl}/api/v1/dataStudio/validateAuth?email=${encodeURIComponent(Session.getEffectiveUser().getEmail())}`,
 		{
