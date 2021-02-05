@@ -16,7 +16,7 @@
     "company": "Redivis",
     "companyUrl": "https://redivis.com",
     "addonUrl": "https://docs.redivis.com/reference/export-and-integrations/data-studio",
-    "supportUrl": "https://github.com/redivis/meta/issues/new/choose",
+    "supportUrl": "https://github.com/redivis/meta/issues",
     "description": "Create interactive visualizations with data hosted on Redivis. Redivis allows organizations to distribute data to the research community, while providing researchers with the tools to discover, understand, and analyze data within a collaborative and open ecosystem.",
     "sources": ["REDIVIS"],
     "shortDescription": "Create interactive visualizations with data stored on Redivis.",
