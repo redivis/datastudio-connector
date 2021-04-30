@@ -42,7 +42,7 @@ function getQuery(request, fields) {
 		fields = '*';
 	}
 
-	return `SELECT ${fields} FROM \`${owner}.${parent}.${table}\``;
+	return `SELECT ${fields} FROM \`${owner}.${parent.replace(/\./g, '_')}.${table.replace(/\./g, '_')}\``;
 }
 
 function getServiceAccountCreds() {
@@ -88,7 +88,11 @@ function getQueryConfig(request) {
 
 	const query = encodeURIComponent(getQuery(request, request.fields));
 
-	const response = UrlFetchApp.fetch(`${baseUrl}/api/v1/dataStudio/getDataQuery?query=${query}`, {
+	// TODO: this always returns true, there's not currently a way to determine whether we're using owner vs. viewer credentials
+	// const isReportOwner = Session.getActiveUser().getEmail() === Session.getEffectiveUser().getEmail();
+	// const reportUri = ''; // TODO
+
+	const response = UrlFetchApp.fetch(`${baseUrl}/api/v1/dataStudio/getDataQuery?query=${query}&isReportOwner=false`, {
 		method: 'get',
 		headers: {
 			Authorization: `Bearer ${getOAuthService().getAccessToken()}`,
